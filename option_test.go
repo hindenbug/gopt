@@ -58,12 +58,10 @@ func TestOption(t *testing.T) {
 			assert.Panics(t, func() { test.input.Bar.Unwrap() })
 		}
 	}
-
 }
 
 func TestOption_Some(t *testing.T) {
 	val := 100
-
 	assert.Equal(t, Option[int]{value: &val}, Some(100))
 }
 
@@ -106,7 +104,6 @@ func TestOption_Unwrap(t *testing.T) {
 	}
 
 	for _, test := range tt {
-
 		if test.wantPanic {
 			assert.Panics(t, func() {
 				test.input.Unwrap()
@@ -115,7 +112,6 @@ func TestOption_Unwrap(t *testing.T) {
 			assert.Equal(t, test.expected, test.input.Unwrap())
 		}
 	}
-
 }
 
 func TestOption_UnwrapOr(t *testing.T) {
