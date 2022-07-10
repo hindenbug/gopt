@@ -6,6 +6,61 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type Foo struct {
+	Name string
+	Bar  Option[Bar]
+}
+
+type Bar struct {
+	Name string
+}
+
+func TestOption(t *testing.T) {
+	barOption := Option[Bar]{value: &Bar{Name: "Bar"}}
+
+	tt := []struct {
+		name       string
+		option     Option[Bar]
+		input      Foo
+		output     Bar
+		useDefault bool
+		wantPanic  bool
+	}{
+		{
+			name:   "with option",
+			option: Option[Bar]{value: &Bar{Name: "Bar"}},
+			input:  Foo{Name: "Foo", Bar: barOption},
+			output: Bar{Name: "Bar"},
+		},
+		{
+			name:       "without default option",
+			option:     Option[Bar]{value: &Bar{Name: "Default Bar"}},
+			input:      Foo{Name: "Foo"},
+			output:     Bar{Name: "Default Bar"},
+			useDefault: true,
+		},
+		{
+			name:      "without option",
+			input:     Foo{Name: "Foo"},
+			wantPanic: true,
+		},
+	}
+
+	for _, test := range tt {
+		if test.useDefault {
+			assert.False(t, test.input.Bar.IsSome())
+			assert.True(t, test.input.Bar.IsNone())
+
+			assert.Equal(t, test.input.Bar.UnwrapOr(*test.option.value), test.output)
+		}
+
+		if test.wantPanic {
+			assert.Panics(t, func() { test.input.Bar.Unwrap() })
+		}
+	}
+
+}
+
 func TestOption_Some(t *testing.T) {
 	val := 100
 
